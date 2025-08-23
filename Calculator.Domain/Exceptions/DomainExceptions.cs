@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Calculator.Domain.Exceptions;
 
-public class InvalidExpressionException : Exception
+public class DomainInvalidExpressionException : Exception
 {
-    public InvalidExpressionException(string message) : base(message) { }
+    public DomainInvalidExpressionException(string message) : base(message) { }
 }
 
 public class DivisionByZeroDomainException : Exception
