@@ -11,4 +11,5 @@ public interface IHistoryService
 {
     Task SaveAsync(string expression, string result, DateTime whenUtc);
     Task<IReadOnlyList<CalculationDto>> GetLastAsync(int count);
+    Task<IReadOnlyList<CalculationDto>> SearchAsync(string query, int limit);
 }

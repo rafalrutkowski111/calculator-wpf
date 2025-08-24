@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,4 +35,30 @@ public class EfHistoryService : IHistoryService
             .Select(x => new CalculationDto(x.Id, x.Expression, x.Result, x.CreatedAtUtc))
             .ToListAsync();
     }
+
+    // tutaj dostajemy x wybranych wpisów jak w GetLastAsync, ale z filtrem
+    // czyli najpierw filtrujemy z bazy a potem pobieramy (nie że lokalnie filtrujemy co pobralismy)
+    // ławtiej było napisać to w sql niż ef
+    public async Task<IReadOnlyList<CalculationDto>> SearchAsync(string query, int limit)
+    {
+        query ??= string.Empty;
+        var like = $"%{query}%";
+
+        var rows = await _db.Calculations
+            .FromSqlInterpolated($@"
+            SELECT *
+            FROM Calculations
+            WHERE Expression LIKE {like}
+               OR Result     LIKE {like}
+               OR strftime('%Y-%m-%d', CreatedAtUtc, 'localtime') = {query}
+               OR strftime('%Y-%m',     CreatedAtUtc, 'localtime') = {query}
+            ORDER BY Id DESC
+            LIMIT {limit}
+        ")
+            .AsNoTracking()
+            .ToListAsync();
+
+        return rows.Select(x => new CalculationDto(x.Id, x.Expression, x.Result, x.CreatedAtUtc)).ToList();
+    }
+
 }

@@ -32,6 +32,7 @@ public partial class App : Application
 
         // Data (impl. interfejsów domeny)
         sc.AddScoped<IHistoryService, EfHistoryService>();
+        sc.AddTransient<HistoryWindow>();
 
         // WPF
         sc.AddSingleton<IConfiguration>(config);

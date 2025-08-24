@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Calculator.App;
 public partial class MainWindow : Window
@@ -73,8 +74,9 @@ public partial class MainWindow : Window
         _wasEquals = false;
     }
     // event wcisnięcia operatora
-    private void Operator_Click(object sender, RoutedEventArgs e)
+    private async void Operator_Click(object sender, RoutedEventArgs e)
     {
+
         _pastedRawMode = false;
 
         var op = ((Button)sender).Content?.ToString();
@@ -89,7 +91,8 @@ public partial class MainWindow : Window
         if (_pendingOperator != null && !_isNewInput)
         {
             // łańcuchowe działanie: policz poprzednie, pokaż wynik
-            EqualCore(saveRepeat: true);
+            var (expr, result) = EqualCore(saveRepeat: true);
+            await TrySaveHistoryAsync(expr, result);
             // ustaw nowy operator i czekaj na prawy operand
             _pendingOperator = op;
             _isNewInput = true;
@@ -101,7 +104,6 @@ public partial class MainWindow : Window
             _pendingOperator = op;
             _isNewInput = true;
         }
-
         _wasEquals = false;
     }
     // event wcisnięcia "="
@@ -110,13 +112,14 @@ public partial class MainWindow : Window
         // wklejanie tekstu
         if (_pastedRawMode)
         {
+            var expr = Display.Text;
             try
             {
-                var result = _engine.Evaluate(Display.Text);
+                var result = _engine.Evaluate(expr);
                 Display.Text = result.ToString(Inv);
 
                 // zapis do historii
-                await TrySaveHistoryAsync(Display.Text, result);
+                await TrySaveHistoryAsync(expr, result);
 
                 // przygotuj stan po policzeniu
                 _leftOperand = result;
@@ -249,6 +252,9 @@ public partial class MainWindow : Window
     // menu
     private void History_Click(object sender, RoutedEventArgs e)
     {
+        var w = App.Services.GetRequiredService<HistoryWindow>();
+        w.Owner = this;
+        w.ShowDialog();
     }
     private void Fx_Click(object sender, RoutedEventArgs e)
     {
