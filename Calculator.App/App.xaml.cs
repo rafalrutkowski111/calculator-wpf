@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Calculator.App.Services;
 using Calculator.Data;
 using Calculator.Data.Services;
 using Calculator.Domain.Services;
@@ -32,11 +33,19 @@ public partial class App : Application
 
         // Data (impl. interfejsów domeny)
         sc.AddScoped<IHistoryService, EfHistoryService>();
-        sc.AddTransient<HistoryWindow>();
+        sc.AddScoped<IExchangeRateStore, EfExchangeRateStore>();
 
-        // WPF
-        sc.AddSingleton<IConfiguration>(config);
+        // FX
+        sc.AddHttpClient(); // HttpClient factory
+        sc.AddScoped<IExchangeRateFetcher, NbpExchangeRateFetcher>();
+        sc.AddSingleton<IExchangeAdvisor, ExchangeAdvisor>();
+
+        // UI (okna WPF)
         sc.AddTransient<MainWindow>();
+        sc.AddTransient<HistoryWindow>();
+        sc.AddTransient<FxWindow>();
+
+        sc.AddSingleton<IConfiguration>(config);
 
         Services = sc.BuildServiceProvider();
 

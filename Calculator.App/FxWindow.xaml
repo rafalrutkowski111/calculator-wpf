@@ -1,0 +1,45 @@
+﻿<Window x:Class="Calculator.App.FxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        Title="Waluty" Height="360" Width="925" WindowStartupLocation="CenterOwner">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <TextBlock Text="Waluta" Margin="0,0,8,0"/>
+            <ComboBox x:Name="CmbCur" Width="90" Margin="0,0,8,0">
+                <ComboBoxItem Content="EUR" IsSelected="True"/>
+                <ComboBoxItem Content="USD"/>
+                <ComboBoxItem Content="GBP"/>
+            </ComboBox>
+
+            <TextBlock Text="Od" Margin="0,0,8,0"/>
+            <DatePicker x:Name="DpFrom" SelectedDate="{x:Static sys:DateTime.Today}" Margin="0,0,8,0"/>
+            <TextBlock Text="Do" Margin="0,0,8,0"/>
+            <DatePicker x:Name="DpTo" SelectedDate="{x:Static sys:DateTime.Today}" Margin="0,0,8,0"/>
+            <TextBlock Text="Kwota" Margin="0,0,8,0"/>
+            <TextBox x:Name="TxtAmount" Width="100" Text="100" Margin="0,0,8,0"/>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
+                <RadioButton x:Name="RbSell" Content="Sprzedaję (MAX)" IsChecked="True" Margin="0,0,8,0"/>
+                <RadioButton x:Name="RbBuy" Content="Kupuję (MIN)" />
+            </StackPanel>
+
+            <Button Content="Policz" Click="Calc_Click"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Margin="0,12,0,0">
+            <TextBlock x:Name="TxtResult" FontSize="16" FontWeight="Bold" TextWrapping="Wrap"/>
+            <DataGrid x:Name="GridRates" AutoGenerateColumns="False" Height="200" Margin="0,8,0,0" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Data" Binding="{Binding Date}" Width="*"/>
+                    <DataGridTextColumn Header="Kurs" Binding="{Binding Rate}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+    </Grid>
+</Window>

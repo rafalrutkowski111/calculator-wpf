@@ -258,6 +258,9 @@ public partial class MainWindow : Window
     }
     private void Fx_Click(object sender, RoutedEventArgs e)
     {
+        var w = App.Services.GetRequiredService<FxWindow>();
+        w.Owner = this;
+        w.ShowDialog();
     }
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
